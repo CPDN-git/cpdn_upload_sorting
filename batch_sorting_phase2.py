@@ -1,5 +1,5 @@
 #!/usr/bin/env python2.7
-import os, sys, time, glob, gzip
+import os, sys, time, glob, gzip,shutil
 import xml.etree.ElementTree as ET
 
 def batch_sorting_phase2(batch_folders,results_folder,upload_base,cleanup_closed=False):
@@ -109,16 +109,28 @@ def batch_sorting_phase2(batch_folders,results_folder,upload_base,cleanup_closed
 #####################
 #
 # Script Setup
+# 
+# Requires environment variables:
+#
+# BATCH_LISTS_BASEDIR: location which the batch directories will be rsynced to
+# RESULTS_FOLDER: Location of sorted results
 
-batches_basedir= '.'
-results_folder='/storage/boinc/projects/cpdnboinc_dev/results'
+batches_basedir = os.environ.get('BATCH_LISTS_BASEDIR')
+results_folder = os.environ.get('RESULTS_FOLDER')
 
-# TODO, for upload servers that are publically accessible, this should be a url e.g. 
+if not (batches_basedir or results_folder):
+    raise Exception("Error, environment variables required: 'BATCH_LISTS_BASEDIR', 'RESULTS_FOLDER'")
+
+#results_folder='/storage/boinc/projects/cpdnboinc_dev/results'
+
+# NOTE: for upload servers that are publically accessible, this should be a url e.g. 
 # UPLOAD_BASE = 'http://upload2.cpdn.org/results'
-# maybe address this as an environment variable set on the server e.g. 
 try:
 	upload_base = os.environ['UPLOAD_BASE']
 except:
+	print "Warning, using RESULTS_FOLDER instead of upload url."
+	print "Set environment variable 'UPLOAD_BASE' to specify the url files can be downloaded from"
+	print "e.g. 'http://upload2.cpdn.org/results'"
 	upload_base= results_folder
 
 # batch files should be rsynced from project_batchlists url to batches_folder/KEY

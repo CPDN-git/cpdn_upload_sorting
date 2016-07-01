@@ -72,10 +72,21 @@ def batch_sorting_phase1(incoming_folder,batch_folders,results_folder,sort_unkno
 			print "Error sorting file:",fname
 	print time.strftime("%Y/%m/%d %H:%M:%S") + " Finished batch_sorting_phase1.py"
 #####################
+#
+# Script Setup
+#
+# Requires environment variables:
+#
+# BATCH_LISTS_BASEDIR: location which the batch directories will be rsynced to
+# RESULTS_FOLDER: Location of sorted results
+# INCOMING_FOLDER: Location incoming files are uploaded to
 
-incoming_folder='../upload'
-batches_basedir= '.'
-results_folder='../results'
+batches_basedir = os.environ.get('BATCH_LISTS_BASEDIR')
+results_folder = os.environ.get('RESULTS_FOLDER')
+incoming_folder = os.environ.get('INCOMING_FOLDER')
+
+if not (batches_basedir or results_folder or incoming_folder):
+    raise Exception("Error, environment variables required: 'BATCH_LISTS_BASEDIR', 'RESULTS_FOLDER', 'INCOMING_FOLDER'")
 
 # batch files should be rsynced from project_batchlists url to batches_folder/KEY
 project_batchlists={}
