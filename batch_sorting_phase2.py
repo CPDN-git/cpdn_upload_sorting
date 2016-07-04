@@ -1,8 +1,8 @@
 #!/usr/bin/env python2.7
-import os, sys, time, glob, gzip,shutil
+import os, sys, time, glob, gzip, shutil, urllib2
 import xml.etree.ElementTree as ET
 
-def batch_sorting_phase2(batch_folders,results_folder,upload_base,cleanup_closed=False):
+def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=False):
 	#
 	# Optional argument 'cleanup_closed: 
 	# Delete folders for 'failed' and 'in_progress' workunits for closed batches
@@ -12,19 +12,23 @@ def batch_sorting_phase2(batch_folders,results_folder,upload_base,cleanup_closed
 	open_batches=[]
 	closed_batches=[]
 	batch_ul_files={}
-	for dl_path in batch_folders:
-		# Get lists of open and closed batches from this project
-		for batch in open(dl_path+'/open_batches.txt'):
-			open_batches.append(batch.strip())
-		for batch in open(dl_path+'/closed_batches.txt'):
-			closed_batches.append(batch.strip())
+	try:
+		for dl_path in batch_urls:
+			# Get lists of open and closed batches from this project
+			for batch in urllib2.urlopen(os.path.join(dl_path,'open_batches.txt')):
+				open_batches.append(batch.strip())
+			for batch in urllib2.urlopen(os.path.join(dl_path,'open_batches.txt')):
+				closed_batches.append(batch.strip())
 
-		# Get number of upload files for each batch
-		batchxml=ET.parse(dl_path+'/batches.xml').getroot()
-		for batch in batchxml.findall('batch'):
-			batchid=batch.attrib['id']
-			ul_files=batch.find('ul_files').text
-			batch_ul_files[batchid]=ul_files
+			# Get number of upload files for each batch
+			batchxml=ET.parse(urllib2.urlopen(dl_path+'/batches.xml')).getroot()
+			for batch in batchxml.findall('batch'):
+				batchid=batch.attrib['id']
+				ul_files=batch.find('ul_files').text
+				batch_ul_files[batchid]=ul_files
+	except Exception,e:
+		print 'Error downloading batch files! Aborting!'
+		raise
 
 	# Set up folders if needed
 	if not os.path.exists(results_folder):
@@ -44,13 +48,14 @@ def batch_sorting_phase2(batch_folders,results_folder,upload_base,cleanup_closed
 				# Get lists of successful and failed tasks
 				successful_tasks=[]
 				failed_tasks=[]
-				for batch_folder in batch_folders:
+				for dl_path in batch_urls:
 					try:
-						for task in open(batch_folder+'/batch_'+batch+'_successful_wus'):
+						for task in urllib2.urlopen(dl_path+'/batch_'+batch+'_successful_wus'):
 							successful_tasks.append(task.strip())
-						for task in open(batch_folder+'/batch_'+batch+'_failed_wus'):
+						for task in urllib2.urlopen(dl_path+'/batch_'+batch+'_failed_wus'):
 							failed_tasks.append(task.strip())
 					except:
+						print "Failed to get lists of successful and failed workunits, skipping batch!"
 						continue
 
 				# Create folders if needed
@@ -112,37 +117,28 @@ def batch_sorting_phase2(batch_folders,results_folder,upload_base,cleanup_closed
 # 
 # Requires environment variables:
 #
-# BATCH_LISTS_BASEDIR: location which the batch directories will be rsynced to
+# BATCH_LISTS_URLS: location which the batch directories will be rsynced to
 # RESULTS_FOLDER: Location of sorted results
 
-batches_basedir = os.environ.get('BATCH_LISTS_BASEDIR')
+batches_urls = os.environ.get('BATCH_LISTS_URLS')
 results_folder = os.environ.get('RESULTS_FOLDER')
 
-if not (batches_basedir or results_folder):
-    raise Exception("Error, environment variables required: 'BATCH_LISTS_BASEDIR', 'RESULTS_FOLDER'")
+if not (batches_urls or results_folder):
+	raise Exception("Error, environment variables required: 'BATCH_LISTS_URLS', 'RESULTS_FOLDER'")
 
-#results_folder='/storage/boinc/projects/cpdnboinc_dev/results'
+# Split up batches_urls if using multiple projects
+batches_urls=batches_urls.split(',')
+
 
 # NOTE: for upload servers that are publically accessible, this should be a url e.g. 
-# UPLOAD_BASE = 'http://upload2.cpdn.org/results'
+# UPLOAD_BASE_URL = 'http://upload2.cpdn.org/results'
 try:
-	upload_base = os.environ['UPLOAD_BASE']
+	upload_base = os.environ['UPLOAD_BASE_URL']
 except:
 	print "Warning, using RESULTS_FOLDER instead of upload url."
-	print "Set environment variable 'UPLOAD_BASE' to specify the url files can be downloaded from"
+	print "Set environment variable 'UPLOAD_BASE_URL' to specify the url files can be downloaded from"
 	print "e.g. 'http://upload2.cpdn.org/results'"
 	upload_base= results_folder
 
-# batch files should be rsynced from project_batchlists url to batches_folder/KEY
-project_batchlists={}
-#project_batchlists['cpdn']='http://climateapps2.oerc.ox.ac.uk/batch/batches.xml'
-project_batchlists['cpdn_dev']='http://vorvadoss.oerc.ox.ac.uk/cpdnboinc_dev/download/batch_lists/'
 
-# Set up batch folders
-batch_folders=[]
-for proj,url in project_batchlists.iteritems():
-	dl_dir=os.path.join(batches_basedir,proj)
-	#TODO rsync the batch folder from url to dl_dir
-	batch_folders.append(dl_dir)
-
-batch_sorting_phase2(batch_folders,results_folder,upload_base)
+batch_sorting_phase2(batches_urls,results_folder,upload_base)

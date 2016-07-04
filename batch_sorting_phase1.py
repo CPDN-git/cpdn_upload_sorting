@@ -1,8 +1,8 @@
 #!/usr/bin/env python2.7
-import os, sys, time,glob
+import os, sys, time, glob, urllib2
 
 
-def batch_sorting_phase1(incoming_folder,batch_folders,results_folder,sort_unknown=False,delete_closed=True):
+def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_unknown=False,delete_closed=True):
 	#
 	# Optional arguments:
 	# sort_unknown: sort files that don't match the lists of open or closed batches into "unknown_batches" folder
@@ -15,12 +15,32 @@ def batch_sorting_phase1(incoming_folder,batch_folders,results_folder,sort_unkno
 
 	open_batches=[]
 	closed_batches=[]
-	for dl_path in batch_folders:
-		# Create lists of open and closed batches from this project
-		for batch in open(os.path.join(dl_path,'open_batches.txt'),'r'):
-			open_batches.append(batch.strip())
-		for batch in open(os.path.join(dl_path,'closed_batches.txt'),'r'):
-			closed_batches.append(batch.strip())
+	urlerror=False
+	for i,dl_path in enumerate(batch_urls):
+		# Read batch lists directly from url
+		try:
+			for batch in urllib2.urlopen(os.path.join(dl_path,'open_batches.txt'),'r'):
+				open_batches.append(batch.strip())
+			for batch in urllib2.urlopen(os.path.join(dl_path,'open_batches.txt'),'r'):
+				closed_batches.append(batch.strip())
+		# Read backup lists of open and closed batches
+		except:
+			for batch in open(os.path.join(tmpdir,'open_batches'+str(i)+'.txt'),'r'):
+				open_batches.append(batch.strip())
+			for batch in open(os.path.join(tmpdir,'closed_batches'+str(i)+'.txt'),'r'):
+				closed_batches.append(batch.strip())
+			print 'Error downloading batch lists from ',dl_path,'using backup from tmpdir'
+			urlerror=True
+		
+	# Write out backup lists of open and closed batches
+	if not urlerror:
+		with open(os.path.join(tmpdir,'open_batches'+str(i)+'.txt'),'w') as f:
+			for batch in open_batches:
+				f.write(batch+'\n')
+		with open(os.path.join(tmpdir,'closed_batches'+str(i)+'.txt'),'w') as f:
+			for batch in closed_batches:
+				f.write(batch+'\n')
+
 
 	# Set up folders if needed
 	if not os.path.exists(results_folder):
@@ -77,27 +97,24 @@ def batch_sorting_phase1(incoming_folder,batch_folders,results_folder,sort_unkno
 #
 # Requires environment variables:
 #
-# BATCH_LISTS_BASEDIR: location which the batch directories will be rsynced to
+# BATCH_LISTS_URLS: location which the batch directories can be downloaded from
 # RESULTS_FOLDER: Location of sorted results
 # INCOMING_FOLDER: Location incoming files are uploaded to
+#
+# Optional environment variable:
+# TMPDIR: directory to put backup lists of open and closed batches
 
-batches_basedir = os.environ.get('BATCH_LISTS_BASEDIR')
+batches_urls = os.environ.get('BATCH_LISTS_URLS')
 results_folder = os.environ.get('RESULTS_FOLDER')
 incoming_folder = os.environ.get('INCOMING_FOLDER')
+tmpdir = os.environ.get('TMPDIR')
 
-if not (batches_basedir or results_folder or incoming_folder):
-    raise Exception("Error, environment variables required: 'BATCH_LISTS_BASEDIR', 'RESULTS_FOLDER', 'INCOMING_FOLDER'")
+if not (batches_urls or results_folder or incoming_folder):
+	raise Exception("Error, environment variables required: 'BATCH_LISTS_URLS', 'RESULTS_FOLDER', 'INCOMING_FOLDER'")
 
-# batch files should be rsynced from project_batchlists url to batches_folder/KEY
-project_batchlists={}
-#project_batchlists['cpdn']='http://climateapps2.oerc.ox.ac.uk/batch/batches.xml'
-project_batchlists['cpdn_dev']='http://vorvadoss.oerc.ox.ac.uk/cpdnboinc_dev/download/batch_lists/'
+if not tmpdir:
+	tmpdir='/tmp'
 
-# Set up batch folders
-batch_folders=[]
-for proj,url in project_batchlists.iteritems():
-	dl_dir=os.path.join(batches_basedir,proj)
-	#TODO rsync the batch folder from url to dl_dir
-	batch_folders.append(dl_dir)
+batches_urls=batches_urls.split(',') # Allow batches_urls to be a comma separated list
 
-batch_sorting_phase1(incoming_folder,batch_folders,results_folder)
+batch_sorting_phase1(incoming_folder,batches_urls,results_folder,tmpdir)
