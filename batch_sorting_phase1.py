@@ -21,23 +21,25 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 		try:
 			for batch in urllib2.urlopen(os.path.join(dl_path,'open_batches.txt'),'r'):
 				open_batches.append(batch.strip())
-			for batch in urllib2.urlopen(os.path.join(dl_path,'open_batches.txt'),'r'):
+			for batch in urllib2.urlopen(os.path.join(dl_path,'closed_batches.txt'),'r'):
 				closed_batches.append(batch.strip())
 		# Read backup lists of open and closed batches
 		except:
-			for batch in open(os.path.join(tmpdir,'open_batches'+str(i)+'.txt'),'r'):
-				open_batches.append(batch.strip())
-			for batch in open(os.path.join(tmpdir,'closed_batches'+str(i)+'.txt'),'r'):
-				closed_batches.append(batch.strip())
 			print 'Error downloading batch lists from ',dl_path,'using backup from tmpdir'
 			urlerror=True
-		
+
+	# Read backup lists of open and closed batches
+	if urlerror:
+		for batch in open(os.path.join(tmpdir,'open_batches.txt'),'r'):
+			open_batches.append(batch.strip())
+		for batch in open(os.path.join(tmpdir,'closed_batches.txt'),'r'):
+			closed_batches.append(batch.strip())
 	# Write out backup lists of open and closed batches
-	if not urlerror:
-		with open(os.path.join(tmpdir,'open_batches'+str(i)+'.txt'),'w') as f:
+	else:
+		with open(os.path.join(tmpdir,'open_batches.txt'),'w') as f:
 			for batch in open_batches:
 				f.write(batch+'\n')
-		with open(os.path.join(tmpdir,'closed_batches'+str(i)+'.txt'),'w') as f:
+		with open(os.path.join(tmpdir,'closed_batches.txt'),'w') as f:
 			for batch in closed_batches:
 				f.write(batch+'\n')
 

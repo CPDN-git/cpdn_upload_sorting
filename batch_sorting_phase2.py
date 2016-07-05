@@ -25,10 +25,11 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Fa
 			for batch in batchxml.findall('batch'):
 				batchid=batch.attrib['id']
 				ul_files=batch.find('ul_files').text
-				batch_ul_files[batchid]=ul_files
+				batch_ul_files[batchid]=int(ul_files)
 	except Exception,e:
+                print e
 		print 'Error downloading batch files! Aborting!'
-		raise
+                sys.exit(-1)
 
 	# Set up folders if needed
 	if not os.path.exists(results_folder):
@@ -83,7 +84,7 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Fa
 							for zipname in glob.glob(os.path.join(success_folder,taskname,'*')):
 								f_success.write(upload_base+zipname[len(results_folder):]+'\n')
 						else:
-							print "Error, wrong number of output files for task",taskname,ul_files
+							print "Error, wrong number of output files for task",taskname,ul_files,batch_ul_files[batch]
 					elif taskname in failed_tasks:
 						print in_progress_task,'to',os.path.join(failed_folder,taskname)
 						os.rename(in_progress_task,os.path.join(failed_folder,taskname))
