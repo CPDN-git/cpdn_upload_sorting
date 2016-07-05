@@ -47,8 +47,10 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 	# Set up folders if needed
 	if not os.path.exists(results_folder):
 		os.mkdir(results_folder)
+		os.system('chmod 775 '+results_folder)
 	if not os.path.exists(results_folder+'/unknown_batches'):
 		os.mkdir(results_folder+'/unknown_batches')
+		os.system('chmod 775 '+results_folder+'/unknown_batches')
 
 	# Loop over zip files in incoming folder
 	for fpath in glob.glob(incoming_folder+'/*.zip'):
@@ -74,6 +76,7 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 				batch_folder=results_folder+'/batch_'+batch
 				if not os.path.exists(batch_folder):
 					os.mkdir(batch_folder)
+					os.system('chmod 775 '+batch_folder)
 				if not os.path.exists(batch_folder+'/in_progress/'):
 					os.mkdir(batch_folder+'/in_progress/')
 				if not os.path.exists(batch_folder+'/in_progress/'+workunit_name):

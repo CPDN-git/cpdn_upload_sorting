@@ -27,9 +27,9 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Fa
 				ul_files=batch.find('ul_files').text
 				batch_ul_files[batchid]=int(ul_files)
 	except Exception,e:
-                print e
+		print e
 		print 'Error downloading batch files! Aborting!'
-                sys.exit(-1)
+		sys.exit(-1)
 
 	# Set up folders if needed
 	if not os.path.exists(results_folder):
@@ -56,8 +56,11 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Fa
 						for task in urllib2.urlopen(dl_path+'/batch_'+batch+'_failed_wus'):
 							failed_tasks.append(task.strip())
 					except:
-						print "Failed to get lists of successful and failed workunits, skipping batch!"
 						continue
+				
+				if len(successful_tasks)==0 and len(failed_tasks)==0:
+					print "Failed to get lists of successful and failed workunits, or no completed workunits, skipping batch!"
+					continue
 
 				# Create folders if needed
 				if len(successful_tasks)>0:
