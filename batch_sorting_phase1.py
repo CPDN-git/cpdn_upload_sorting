@@ -1,5 +1,5 @@
 #!/usr/bin/env python2.7
-import os, sys, time, glob, urllib2, zipfile
+import os, sys, time, glob, urllib2, zipfile, shutil
 
 
 def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_unknown=False,delete_closed=True):
@@ -83,7 +83,7 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 					os.mkdir(batch_folder+'/in_progress/')
 				if not os.path.exists(batch_folder+'/in_progress/'+workunit_name):
 					os.mkdir(batch_folder+'/in_progress/'+workunit_name)
-				os.rename(fpath,batch_folder+'/in_progress/'+workunit_name+'/'+fname_out)
+				shutil.move(fpath,batch_folder+'/in_progress/'+workunit_name+'/'+fname_out)
 				print fname_out,batch
 			# Check if workunit is from a closed batch
 			elif batch in closed_batches:
@@ -93,7 +93,7 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 					print 'deleting from closed batch',fname,batch
 			else:
 				if sort_unknown:
-					os.rename(fpath,results_folder+'/unknown_batches/'+fname)
+					shutil.move(fpath,results_folder+'/unknown_batches/'+fname)
 					print fname,'unknown batch'
 		except Exception,e:
 			print "Error sorting file:",fname
