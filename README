@@ -1,5 +1,15 @@
 This is a git repository to contain the cpdn upload sorting scripts. 
 
+batch_sorting_phase1.py:
+Takes upload files from the INCOMING_FOLDER and sorts them into batch folders for in progress workunits e.g. RESULTS_FOLDER/batch_XXX/in_progress
+NOTE: this only sorts open batches. files from closed batches are deleted (unless function called with argument delete_closed=False)
+Lists of open and closed batches are retrieved from the BATCH_LISTS_URLS
+
+batch_sorting_phase2.py
+Takes lists of successful and failed workunits, retrieved from the BATCH_LISTS_URLS, and sorts any workunits from the 'in_progress' directories to 'successful' or 'failed' directories. e.g. RESULTS_FOLDER/batch_XXX/successful and RESULTS_FOLDER/batch_XXX/failed
+Creates a list of sucessful results in RESULTS_FOLDER/batch_XXX/batch_XXX.txt.gz
+
+INSTALLATION:
 It is suggested that these scripts are run by the crontab, setting the required environment variables. 
 
 Note: first this repository will need to be cloned into the 'SCRIPTS_DIR'
