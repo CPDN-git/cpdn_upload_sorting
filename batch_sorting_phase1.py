@@ -1,5 +1,5 @@
 #!/usr/bin/env python2.7
-import os, sys, time, glob, urllib2
+import os, sys, time, glob, urllib2, zipfile
 
 
 def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_unknown=False,delete_closed=True):
@@ -56,6 +56,8 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 	for fpath in glob.glob(incoming_folder+'/*.zip'):
 		fname=os.path.basename(fpath)
 		try:
+			if not zipfile.is_zipfile(fpath):
+				raise Exception('File is not a valid zip, may be corrupted or partial file')
 			# Split string up (assume has the format: hadam3p_eu_fs23_201412_1_d401_000000951_0_r1285010883_1.zip
 			str_split=fname.split('_')
 			fname_out=''
@@ -93,8 +95,9 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 				if sort_unknown:
 					os.rename(fpath,results_folder+'/unknown_batches/'+fname)
 					print fname,'unknown batch'
-		except:
+		except Exception,e:
 			print "Error sorting file:",fname
+			print e
 	print time.strftime("%Y/%m/%d %H:%M:%S") + " Finished batch_sorting_phase1.py"
 #####################
 #
