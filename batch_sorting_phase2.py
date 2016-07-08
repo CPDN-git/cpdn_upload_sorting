@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import os, sys, time, glob, gzip, shutil, urllib2
 import xml.etree.ElementTree as ET
 
