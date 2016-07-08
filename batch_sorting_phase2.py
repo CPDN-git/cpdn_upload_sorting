@@ -61,6 +61,7 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Fa
 				if len(successful_tasks)==0 and len(failed_tasks)==0:
 					print "Failed to get lists of successful and failed workunits, or no completed workunits, skipping batch!"
 					continue
+				print len(successful_tasks),'succesfull and',len(failed_tasks),'failed tasks in batch'
 
 				# Create folders if needed
 				if len(successful_tasks)>0:
