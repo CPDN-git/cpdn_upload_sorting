@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 import os, sys, time, glob, urllib2, zipfile, shutil
 
 
