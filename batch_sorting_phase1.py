@@ -56,8 +56,6 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 	for fpath in glob.glob(incoming_folder+'/*.zip'):
 		fname=os.path.basename(fpath)
 		try:
-			if not zipfile.is_zipfile(fpath):
-				raise Exception('File is not a valid zip, may be corrupted or partial file')
 			# Split string up (assume has the format: hadam3p_eu_fs23_201412_1_d401_000000951_0_r1285010883_1.zip
 			str_split=fname.split('_')
 			fname_out=''
@@ -83,8 +81,12 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 					os.mkdir(batch_folder+'/in_progress/')
 				if not os.path.exists(batch_folder+'/in_progress/'+workunit_name):
 					os.mkdir(batch_folder+'/in_progress/'+workunit_name)
-				shutil.move(fpath,batch_folder+'/in_progress/'+workunit_name+'/'+fname_out)
+				# Before moving, check the file is a complete zip file
+				if not zipfile.is_zipfile(fpath):
+					raise Exception('File is not a valid zip, may be corrupted or partial file')
+				# Move to batch folder
 				print fname_out,batch
+				shutil.move(fpath,batch_folder+'/in_progress/'+workunit_name+'/'+fname_out)
 			# Check if workunit is from a closed batch
 			elif batch in closed_batches:
 				if delete_closed:
@@ -93,7 +95,13 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 					print 'deleting from closed batch',fname,batch
 			else:
 				if sort_unknown:
+					# Before moving, check the file is a complete zip file
+					if not zipfile.is_zipfile(fpath):
+						raise Exception('File is not a valid zip, may be corrupted or partial file')
+					# Move to unknown batches folder
+					print fname,'moving to unknown_batches'
 					shutil.move(fpath,results_folder+'/unknown_batches/'+fname)
+				else:
 					print fname,'unknown batch'
 		except Exception,e:
 			print "Error sorting file:",fname
