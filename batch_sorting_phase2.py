@@ -83,7 +83,10 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Fa
 						ul_files=len(glob.glob(in_progress_task+'/*.zip'))
 						if ul_files==batch_ul_files[batch]:
 							print in_progress_task,'to',os.path.join(success_folder,taskname)
-							os.rename(in_progress_task,os.path.join(success_folder,taskname))
+							if not os.path.exists(os.path.join(success_folder,taskname)):
+								os.renames(in_progress_task,os.path.join(success_folder,taskname))
+							else:
+								print "Error, successful folder already exists for this task"
 							# Write list of output files to f_success text file
 							for zipname in glob.glob(os.path.join(success_folder,taskname,'*')):
 								f_success.write(upload_base+zipname[len(results_folder):]+'\n')
@@ -91,7 +94,10 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Fa
 							print "Error, wrong number of output files for task",taskname,ul_files,batch_ul_files[batch]
 					elif taskname in failed_tasks:
 						print in_progress_task,'to',os.path.join(failed_folder,taskname)
-						os.rename(in_progress_task,os.path.join(failed_folder,taskname))
+						if not os.path.exists(os.path.join(failed_folder,taskname)):
+							os.renames(in_progress_task,os.path.join(failed_folder,taskname))
+						else:
+							print "Error, failed folder already exists for this task"
 
 				# Cleanup successful tasks file
 				if len(successful_tasks)>0:
@@ -115,6 +121,7 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Fa
 		except Exception,e:
 			print "Error sorting batch",batch
 			print e
+			raise
 	print time.strftime("%Y/%m/%d %H:%M:%S") + " Finished batch_sorting_phase2.py"
 #####################
 #
