@@ -17,7 +17,7 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Fa
 			# Get lists of open and closed batches from this project
 			for batch in urllib2.urlopen(os.path.join(dl_path,'open_batches.txt')):
 				open_batches.append(batch.strip())
-			for batch in urllib2.urlopen(os.path.join(dl_path,'open_batches.txt')):
+			for batch in urllib2.urlopen(os.path.join(dl_path,'closed_batches.txt')):
 				closed_batches.append(batch.strip())
 
 			# Get number of upload files for each batch
