@@ -97,7 +97,17 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Fa
 						if not os.path.exists(os.path.join(failed_folder,taskname)):
 							os.renames(in_progress_task,os.path.join(failed_folder,taskname))
 						else:
-							print "Error, failed folder already exists for this task"
+							print "Warning, failed folder already exists for this task, merging from in_progress"
+							for fpath in glob.glob(in_progress_task):
+								fname=os.path.basename(fpath)
+								failed_path=os.path.join(failed_folder,taskname,fname)
+								if not os.path.exists(failed_path):
+									print 'merging',fname, 'from in_progress to failed'
+									os.rename(fpath,failed_path)
+								else:
+									print fname,'already moved to failed, deleting from in_progress'
+									os.remove(fpath)
+							os.rmdir(in_progress_task)
 
 				# Cleanup successful tasks file
 				if len(successful_tasks)>0:
