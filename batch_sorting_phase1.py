@@ -126,7 +126,7 @@ incoming_folder = os.environ.get('INCOMING_FOLDER')
 tmpdir = os.environ.get('TMPDIR')
 
 cleanup_closed = os.environ.get('CLEANUP_CLOSED_BATCHES')
-if not cleanup_closed.upper() == 'TRUE'
+if not cleanup_closed.upper() == 'TRUE':
 	cleanup_flag=False
 else: # Default to True
 	cleanup_flag=True

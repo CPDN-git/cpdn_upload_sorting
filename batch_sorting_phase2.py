@@ -146,7 +146,7 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Tr
 batches_urls = os.environ.get('BATCH_LISTS_URLS')
 results_folder = os.environ.get('RESULTS_FOLDER')
 cleanup_closed = os.environ.get('CLEANUP_CLOSED_BATCHES')
-if not cleanup_closed.upper() == 'TRUE'
+if not cleanup_closed.upper() == 'TRUE':
 	cleanup_flag=False
 else: # Default to True
 	cleanup_flag=True
