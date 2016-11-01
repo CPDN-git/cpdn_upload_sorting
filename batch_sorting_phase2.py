@@ -2,7 +2,7 @@
 import os, sys, time, glob, gzip, shutil, urllib2
 import xml.etree.ElementTree as ET
 
-def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=False):
+def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=True):
 	#
 	# Optional argument 'cleanup_closed: 
 	# Delete folders for 'failed' and 'in_progress' workunits for closed batches
@@ -145,6 +145,11 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Fa
 
 batches_urls = os.environ.get('BATCH_LISTS_URLS')
 results_folder = os.environ.get('RESULTS_FOLDER')
+cleanup_closed = os.environ.get('CLEANUP_CLOSED_BATCHES')
+if not cleanup_closed.upper() == 'TRUE'
+	cleanup_flag=False
+else: # Default to True
+	cleanup_flag=True
 
 if not (batches_urls or results_folder):
 	raise Exception("Error, environment variables required: 'BATCH_LISTS_URLS', 'RESULTS_FOLDER'")
@@ -164,4 +169,4 @@ except:
 	upload_base= results_folder
 
 
-batch_sorting_phase2(batches_urls,results_folder,upload_base)
+batch_sorting_phase2(batches_urls,results_folder,upload_base,cleanup_flag)

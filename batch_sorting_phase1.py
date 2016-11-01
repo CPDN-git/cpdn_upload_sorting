@@ -125,6 +125,12 @@ results_folder = os.environ.get('RESULTS_FOLDER')
 incoming_folder = os.environ.get('INCOMING_FOLDER')
 tmpdir = os.environ.get('TMPDIR')
 
+cleanup_closed = os.environ.get('CLEANUP_CLOSED_BATCHES')
+if not cleanup_closed.upper() == 'TRUE'
+	cleanup_flag=False
+else: # Default to True
+	cleanup_flag=True
+
 if not (batches_urls or results_folder or incoming_folder):
 	raise Exception("Error, environment variables required: 'BATCH_LISTS_URLS', 'RESULTS_FOLDER', 'INCOMING_FOLDER'")
 
@@ -133,4 +139,4 @@ if not tmpdir:
 
 batches_urls=batches_urls.split(',') # Allow batches_urls to be a comma separated list
 
-batch_sorting_phase1(incoming_folder,batches_urls,results_folder,tmpdir)
+batch_sorting_phase1(incoming_folder,batches_urls,results_folder,tmpdir,cleanup_flag)
