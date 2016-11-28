@@ -2,12 +2,20 @@
 import os, sys, time, glob, gzip, shutil, urllib2
 import xml.etree.ElementTree as ET
 
-def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=True):
+def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=True,sort_by_project=False):
 	#
 	# Optional argument 'cleanup_closed: 
 	# Delete folders for 'failed' and 'in_progress' workunits for closed batches
 	#
 	print time.strftime("%Y/%m/%d %H:%M:%S") + " Starting batch_sorting_phase2.py\n"
+
+	# Function useful for debugging: 
+	# fall back to trying to open as a local file if the url doesn't exist
+	def read_url_or_file(fname):
+		try:
+			return urllib2.urlopen(fname,'r')
+		except:
+			return open(fname,'r')
 
 	open_batches=[]
 	closed_batches=[]
@@ -15,13 +23,13 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Tr
 	try:
 		for dl_path in batch_urls:
 			# Get lists of open and closed batches from this project
-			for batch in urllib2.urlopen(os.path.join(dl_path,'open_batches.txt')):
+			for batch in read_url_or_file(os.path.join(dl_path,'open_batches.txt')):
 				open_batches.append(batch.strip())
-			for batch in urllib2.urlopen(os.path.join(dl_path,'closed_batches.txt')):
+			for batch in read_url_or_file(os.path.join(dl_path,'closed_batches.txt')):
 				closed_batches.append(batch.strip())
 
 			# Get number of upload files for each batch
-			batchxml=ET.parse(urllib2.urlopen(dl_path+'/batches.xml')).getroot()
+			batchxml=ET.parse(read_url_or_file(dl_path+'/batches.xml')).getroot()
 			for batch in batchxml.findall('batch'):
 				batchid=batch.attrib['id']
 				ul_files=batch.find('ul_files').text
@@ -36,7 +44,12 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Tr
 		raise Exception("Error results folder doesnt exist: "+results_folder)
 
 	# Loop over batches
-	for batch_path in glob.glob(results_folder+'/*'):
+	if sort_by_project:
+		# Search extra level for projects
+		results_path=results_folder+'/*/*'
+	else:
+		results_path=results_folder+'/*'
+	for batch_path in glob.glob(results_path):
 		# Assume batch folder is in the form results_folder/batch_XXX
 		if os.path.basename(batch_path)[:6]=='batch_':
 			batch=os.path.basename(batch_path).split('_')[-1]
@@ -51,9 +64,9 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Tr
 				failed_tasks=[]
 				for dl_path in batch_urls:
 					try:
-						for task in urllib2.urlopen(dl_path+'/batch_'+batch+'_successful_wus'):
+						for task in read_url_or_file(dl_path+'/batch_'+batch+'_successful_wus'):
 							successful_tasks.append(task.strip())
-						for task in urllib2.urlopen(dl_path+'/batch_'+batch+'_failed_wus'):
+						for task in read_url_or_file(dl_path+'/batch_'+batch+'_failed_wus'):
 							failed_tasks.append(task.strip())
 					except:
 						continue
@@ -145,11 +158,18 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Tr
 
 batches_urls = os.environ.get('BATCH_LISTS_URLS')
 results_folder = os.environ.get('RESULTS_FOLDER')
-cleanup_closed = os.environ.get('CLEANUP_CLOSED_BATCHES')
-if not cleanup_closed.upper() == 'TRUE':
-	cleanup_flag=False
+
+option = os.environ.get('CLEANUP_CLOSED_BATCHES')
+if option is not None and option.upper() == 'FALSE':
+	cleanup_closed=False
 else: # Default to True
-	cleanup_flag=True
+	cleanup_closed=True
+
+option = os.environ.get('PROJECT_FOLDER_SORTING')
+if option is not None and option.upper() == 'TRUE':
+	sort_by_project=True
+else: # Default to False
+	sort_by_project=False
 
 if not (batches_urls or results_folder):
 	raise Exception("Error, environment variables required: 'BATCH_LISTS_URLS', 'RESULTS_FOLDER'")
@@ -169,4 +189,4 @@ except:
 	upload_base= results_folder
 
 
-batch_sorting_phase2(batches_urls,results_folder,upload_base,cleanup_flag)
+batch_sorting_phase2(batches_urls,results_folder,upload_base,cleanup_closed=cleanup_closed,sort_by_project=sort_by_project)
