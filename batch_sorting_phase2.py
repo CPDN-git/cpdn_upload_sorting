@@ -163,9 +163,12 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Tr
 # BATCH_LISTS_URLS: location which the batch directories will be rsynced to
 # RESULTS_FOLDER: Location of sorted results
 #
-# Optional environment variables (logical flags): 
-# CLEANUP_CLOSED_BATCHES, PROJECT_FOLDER_SORTING
+# Optional environment variables: 
+# UPLOAD_BASE_URL: Url for sorted files on the upload server (goes into list of successful workunits as a 'wget' file) e.g. http://upload2.cpdn.org/results
+#
+# Logical flags: CLEANUP_CLOSED_BATCHES, PROJECT_FOLDER_SORTING
 # See notes in batch_sorting_phase2 function
+
 
 batches_urls = os.environ.get('BATCH_LISTS_URLS')
 results_folder = os.environ.get('RESULTS_FOLDER')
