@@ -2,15 +2,23 @@
 import os, sys, time, glob, urllib2, zipfile, shutil
 import xml.etree.ElementTree as ET
 
-def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_unknown=False,delete_closed=True,sort_by_project=False):
+def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_unknown=False,delete_incoming_closed=True,sort_by_project=False):
 	#
 	# Optional arguments:
-	# sort_unknown: sort files that don't match the lists of open or closed batches into "unknown_batches" folder
+	# sort_unknown: 
+	#               sort files that don't match the lists of open or closed batches into "unknown_batches" folder
 	#               For this option, the 'open_batches.txt' and 'closed_batches.txt'
 	#               need to be up to date otherwise files will be sorted incorrectly
 	#               Default is False
-	# delete_closed: delete files from closed batches
-	#               Default is True
+	# delete_incoming_closed: 
+	#               Delete new files in the incoming folder from closed batches 
+	#               If false files will build up in the incoming folder
+	#               Default is true
+	# sort_by_project: 
+	#               Add project directory in result folder structure:
+	#               TRUE: $RESULTS_FOLDER/$PROJECT/batch_XXX
+	#               FALSE: $RESULTS_FOLDER/batch_XXX
+	#               Default is False
 	print time.strftime("%Y/%m/%d %H:%M:%S") + " Starting batch_sorting_phase1.py\n"
 
 	# Function useful for debugging: 
@@ -116,7 +124,7 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 				shutil.move(fpath,batch_folder+'/in_progress/'+workunit_name+'/'+fname_out)
 			# Check if workunit is from a closed batch
 			elif batch in closed_batches:
-				if delete_closed:
+				if delete_incoming_closed:
 					# Delete this file
 					os.remove(fpath)
 					print 'deleting from closed batch',fname,batch
@@ -146,17 +154,22 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 #
 # Optional environment variable:
 # TMPDIR: directory to put backup lists of open and closed batches
+# 
+# Optional environment variables (logical flags):
+# DELETE_INCOMING_CLOSED, PROJECT_FOLDER_SORTING, SORT_UNKNOWN:
+# See notes in batch_sorting_phase1 function
+
 
 batches_urls = os.environ.get('BATCH_LISTS_URLS')
 results_folder = os.environ.get('RESULTS_FOLDER')
 incoming_folder = os.environ.get('INCOMING_FOLDER')
 tmpdir = os.environ.get('TMPDIR')
 
-option = os.environ.get('CLEANUP_CLOSED_BATCHES')
+option = os.environ.get('DELETE_INCOMING_CLOSED')
 if option is not None and option.upper() == 'FALSE':
-	cleanup_closed=False
+	delete_incoming_closed=False
 else: # Default to True
-	cleanup_closed=True
+	delete_incoming_closed=True
 
 option = os.environ.get('PROJECT_FOLDER_SORTING')
 if option is not None and option.upper() == 'TRUE':
@@ -178,4 +191,4 @@ if not tmpdir:
 
 batches_urls=batches_urls.split(',') # Allow batches_urls to be a comma separated list
 
-batch_sorting_phase1(incoming_folder,batches_urls,results_folder,tmpdir,sort_unknown=sort_unknown,delete_closed=cleanup_closed,sort_by_project=sort_by_project)
+batch_sorting_phase1(incoming_folder,batches_urls,results_folder,tmpdir,sort_unknown=sort_unknown,delete_incoming_closed=delete_incoming_closed,sort_by_project=sort_by_project)

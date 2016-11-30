@@ -1,47 +1,63 @@
 This is a git repository to contain the cpdn upload sorting scripts. 
 
 batch_sorting_phase1.py:
-Takes upload files from the INCOMING_FOLDER and sorts them into batch folders for in progress workunits e.g. RESULTS_FOLDER/batch_XXX/in_progress
-NOTE: this only sorts open batches. files from closed batches are deleted (unless function called with argument delete_closed=False)
-Lists of open and closed batches are retrieved from the BATCH_LISTS_URLS
+	Takes upload files from the INCOMING_FOLDER and sorts them into batch folders for in progress workunits 
+	e.g. RESULTS_FOLDER/batch_XXX/in_progress
+	NOTE: this only sorts open batches. 
+	Files from closed batches are deleted (unless function called with argument delete_incoming_closed=False)
+	Lists of open and closed batches are retrieved from the BATCH_LISTS_URLS
 
 batch_sorting_phase2.py
-Takes lists of successful and failed workunits, retrieved from the BATCH_LISTS_URLS, and sorts any workunits from the 'in_progress' directories to 'successful' or 'failed' directories. e.g. RESULTS_FOLDER/batch_XXX/successful and RESULTS_FOLDER/batch_XXX/failed
-Creates a list of sucessful results in RESULTS_FOLDER/batch_XXX/batch_XXX.txt.gz
+	Takes lists of successful and failed workunits, retrieved from the BATCH_LISTS_URLS
+	Sorts any workunits from the 'in_progress' directories to 'successful' or 'failed' directories (for open batches). 
+	e.g. RESULTS_FOLDER/batch_XXX/successful and RESULTS_FOLDER/batch_XXX/failed
+	Creates a list of sucessful results in RESULTS_FOLDER/batch_XXX/batch_XXX.txt.gz
+	In Progress and Failed workunits will be deleted from closed batches if CLEANUP_CLOSED is set. 
 
 INSTALLATION:
-It is suggested that these scripts are run by the crontab, setting the required environment variables. 
+	It is suggested that these scripts are cloned from git https://github.com/pfuhe1/cpdn_upload_sorting
+	Run scripts on the crontab, setting the required environment variables. 
 
-Note: first this repository will need to be cloned into the 'SCRIPTS_DIR'
+### Environment Variables for batch sorting scripts ###
 
-Example crontab on anemoi:
+BATCH_LISTS_URLS:
+			Location of lists of batches and successful/failed workunits
+			e.g. 'http://vorvadoss.oerc.ox.ac.uk/cpdnboinc_dev/download/batch_lists,http://climateapps2.oerc.ox.ac.uk/batch'
 
-### Environment Variables for batch sorting scripts
-#
-# location of lists of batches and successful/failed workunits
-BATCH_LISTS_URLS=http://vorvadoss.oerc.ox.ac.uk/cpdnboinc_dev/download/batch_lists,http://climateapps2.oerc.ox.ac.uk/batch
+RESULTS_FOLDER:
+			Folder for sorted results
+			e.g. /storage/boinc/upload
 
-# Folder for sorted results
-RESULTS_FOLDER=/storage/boinc/upload
+INCOMING_FOLDER:
+			Incoming folder where new uploads are put by boinc daemon
+			e.g. /storage/incoming/uploader
 
-# Incoming folder where new uploads are put
-INCOMING_FOLDER=/storage/incoming/uploader
+# Optional Environment Variables: #
 
-# (optional) temporary directory which the backup 'open_batches.txt' and 'closed_batches.txt' are saved to
-TMPDIR=/home/cpdn
+TMPDIR: (phase 1 only):
+			Temporary directory which the backup 'open_batches.txt' and 'closed_batches.txt' are saved to
 
-# (optional) url for sorted files on the upload folder (goes into list of successful workunits as a 'wget' file)
-UPLOAD_BASE_URL=http://upload2.cpdn.org/results
+UPLOAD_BASE_URL (phase 2 only):
+			Url for sorted files on the upload server (goes into list of successful workunits as a 'wget' file)
+			e.g. http://upload2.cpdn.org/results
 
-# Directory which these scripts are cloned into
-SCRIPTS_DIR=/home/cpdn/cpdn_upload_sorting
+SORT_BY_PROJECT: (phase 1 and 2)
+			Add project directory in result folder structure:
+			TRUE: $RESULTS_FOLDER/$PROJECT/batch_XXX
+			FALSE: $RESULTS_FOLDER/batch_XXX
+			Default is False
 
-# Directory for log files
-LOG_DIR=/var/www/projects/cpdn/log_anemoi
+SORT_UNKNOWN: (phase 1 only)
+			sort files that don't match the lists of open or closed batches into "unknown_batches" folder
+			For this option, the 'open_batches.txt' and 'closed_batches.txt'
+			need to be up to date otherwise files will be sorted incorrectly
+			Default is False
 
-# Pull updates from repo
-55 * * * * /bin/sh -c "cd $SCRIPTS_DIR && /usr/bin/git pull origin master" 2>/dev/null
+DELETE_INCOMING_CLOSED: (phase 1 only)
+			Delete new files in the incoming folder from closed batches 
+			If false files will build up in the incoming folder
+			Default is true
 
-# Do the sorting (phase1: hourly, phase2: daily @ 7am)
-0 * * * * $SCRIPTS_DIR/batch_sorting_phase1.py >> $LOG_DIR/batch_sorting_phase1.log
-0 7 * * * $SCRIPTS_DIR/batch_sorting_phase2.py >> $LOG_DIR/batch_sorting_phase2.log
+CLEANUP_CLOSED: (phase 2 only)
+			Delete folders for 'failed' and 'in_progress' workunits for closed batches
+			Default is False

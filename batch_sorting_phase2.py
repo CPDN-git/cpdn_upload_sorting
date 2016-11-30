@@ -4,9 +4,15 @@ import xml.etree.ElementTree as ET
 
 def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=True,sort_by_project=False):
 	#
-	# Optional argument 'cleanup_closed: 
-	# Delete folders for 'failed' and 'in_progress' workunits for closed batches
-	#
+	# Optional arguments: 
+	# cleanup_closed: 
+	#               Delete folders for 'failed' and 'in_progress' workunits for closed batches
+	#               Default is False
+	# sort_by_project: 
+	#               Add project directory in result folder structure:
+	#               TRUE: $RESULTS_FOLDER/$PROJECT/batch_XXX
+	#               FALSE: $RESULTS_FOLDER/batch_XXX
+	#               Default is False
 	print time.strftime("%Y/%m/%d %H:%M:%S") + " Starting batch_sorting_phase2.py\n"
 
 	# Function useful for debugging: 
@@ -102,6 +108,7 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Tr
 								print "Error, successful folder already exists for this task"
 							# Write list of output files to f_success text file
 							for zipname in glob.glob(os.path.join(success_folder,taskname,'*')):
+								# Concat upload_base with second half of file path (removing results folder)
 								f_success.write(upload_base+zipname[len(results_folder):]+'\n')
 						else:
 							print "Error, wrong number of output files for task",taskname,ul_files,batch_ul_files[batch]
@@ -155,15 +162,19 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Tr
 #
 # BATCH_LISTS_URLS: location which the batch directories will be rsynced to
 # RESULTS_FOLDER: Location of sorted results
+#
+# Optional environment variables (logical flags): 
+# CLEANUP_CLOSED_BATCHES, PROJECT_FOLDER_SORTING
+# See notes in batch_sorting_phase2 function
 
 batches_urls = os.environ.get('BATCH_LISTS_URLS')
 results_folder = os.environ.get('RESULTS_FOLDER')
 
 option = os.environ.get('CLEANUP_CLOSED_BATCHES')
-if option is not None and option.upper() == 'FALSE':
-	cleanup_closed=False
-else: # Default to True
+if option is not None and option.upper() == 'TRUE':
 	cleanup_closed=True
+else: # Default to False
+	cleanup_closed=False
 
 option = os.environ.get('PROJECT_FOLDER_SORTING')
 if option is not None and option.upper() == 'TRUE':
