@@ -58,6 +58,6 @@ DELETE_INCOMING_CLOSED: (phase 1 only)
 			If false files will build up in the incoming folder
 			Default is true
 
-CLEANUP_CLOSED: (phase 2 only)
+CLEANUP_CLOSED_BATCHES: (phase 2 only)
 			Delete folders for 'failed' and 'in_progress' workunits for closed batches
 			Default is False
