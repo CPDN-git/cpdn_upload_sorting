@@ -166,7 +166,7 @@ def batch_sorting_phase2(batch_urls,results_folder,upload_base,cleanup_closed=Tr
 # Optional environment variables: 
 # UPLOAD_BASE_URL: Url for sorted files on the upload server (goes into list of successful workunits as a 'wget' file) e.g. http://upload2.cpdn.org/results
 #
-# Logical flags: CLEANUP_CLOSED_BATCHES, PROJECT_FOLDER_SORTING
+# Logical flags: CLEANUP_CLOSED_BATCHES, SORT_BY_PROJECT
 # See notes in batch_sorting_phase2 function
 
 
@@ -179,7 +179,7 @@ if option is not None and option.upper() == 'TRUE':
 else: # Default to False
 	cleanup_closed=False
 
-option = os.environ.get('PROJECT_FOLDER_SORTING')
+option = os.environ.get('SORT_BY_PROJECT')
 if option is not None and option.upper() == 'TRUE':
 	sort_by_project=True
 else: # Default to False

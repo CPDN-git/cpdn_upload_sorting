@@ -156,7 +156,7 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 # TMPDIR: directory to put backup lists of open and closed batches
 # 
 # Optional environment variables (logical flags):
-# DELETE_INCOMING_CLOSED, PROJECT_FOLDER_SORTING, SORT_UNKNOWN:
+# DELETE_INCOMING_CLOSED, SORT_BY_PROJECT, SORT_UNKNOWN:
 # See notes in batch_sorting_phase1 function
 
 
@@ -171,7 +171,7 @@ if option is not None and option.upper() == 'FALSE':
 else: # Default to True
 	delete_incoming_closed=True
 
-option = os.environ.get('PROJECT_FOLDER_SORTING')
+option = os.environ.get('SORT_BY_PROJECT')
 if option is not None and option.upper() == 'TRUE':
 	sort_by_project=True
 else: # Default to False
