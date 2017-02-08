@@ -185,6 +185,8 @@ if option is not None and option.upper() == 'TRUE':
 else: # Default to False
 	sort_by_project=False
 
+print 'sort by project:',sort_by_project
+
 if not (batches_urls or results_folder):
 	raise Exception("Error, environment variables required: 'BATCH_LISTS_URLS', 'RESULTS_FOLDER'")
 
