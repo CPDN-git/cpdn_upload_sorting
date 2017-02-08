@@ -4,7 +4,7 @@ RESULTS_FOLDER=/storage/boinc/projects/cpdnboinc_dev/results
 INCOMING_FOLDER=/storage/boinc/projects/cpdnboinc_dev/upload
 TMPDIR=/storage/boinc/projects/cpdnboinc_dev/cpdn_upload_sorting
 UPLOAD_SCRIPTS_DIR=/storage/boinc/projects/cpdnboinc_dev/cpdn_upload_sorting
-PROJECT_FOLDER_SORTING=TRUE
+SORT_BY_PROJECT=TRUE
 CLEANUP_CLOSED_BATCHES=TRUE
 # Pull updates from repo
  55 * * * * /bin/sh -c "cd $UPLOAD_SCRIPTS_DIR && /usr/bin/git pull origin master" 2>/dev/null

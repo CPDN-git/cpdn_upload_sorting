@@ -4,5 +4,6 @@ export RESULTS_FOLDER=/storage/boinc/upload
 export INCOMING_FOLDER=/storage/incoming/uploader
 export TMPDIR=/home/cpdn
 export UPLOAD_BASE_URL=http://upload2.cpdn.org/results
+export CLEANUP_CLOSED_BATCHES=TRUE
 ./batch_sorting_phase1.py >> /var/www/projects/cpdn/log_anemoi/batch_sorting_phase1.log
 ./batch_sorting_phase2.py >> /var/www/projects/cpdn/log_anemoi/batch_sorting_phase2.log
