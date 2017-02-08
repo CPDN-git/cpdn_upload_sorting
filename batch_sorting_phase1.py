@@ -176,6 +176,8 @@ if option is not None and option.upper() == 'TRUE':
 	sort_by_project=True
 else: # Default to False
 	sort_by_project=False
+
+print 'sort by project:',sort_by_project
 	
 option = os.environ.get('SORT_UNKNOWN')
 if option is not None and option.upper() == 'TRUE':
