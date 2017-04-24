@@ -15,7 +15,7 @@ batch_sorting_phase2.py
 	In Progress and Failed workunits will be deleted from closed batches if CLEANUP_CLOSED is set. 
 
 INSTALLATION:
-	It is suggested that these scripts are cloned from git https://github.com/pfuhe1/cpdn_upload_sorting
+	It is suggested that these scripts are cloned from git https://github.com/CPDN-git/cpdn_upload_sorting
 	Run scripts on the crontab, setting the required environment variables. 
 
 ### Environment Variables for batch sorting scripts ###
