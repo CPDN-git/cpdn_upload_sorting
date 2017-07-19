@@ -83,6 +83,10 @@ def batch_sorting_phase1(incoming_folder,batch_urls,results_folder,tmpdir,sort_u
 	for fpath in glob.glob(incoming_folder+'/*.zip'):
 		fname=os.path.basename(fpath)
 		try:
+		# Add check to see if zip is corrupt or not to prevent invalid folder creation.
+		    	if not zipfile.is_zipfile(fpath):
+		       		raise Exception('File is not a valid zip, may be corrupted or partial file')
+
 			# Split string up (assume has the format: hadam3p_eu_fs23_201412_1_d401_000000951_0_r1285010883_1.zip
 			str_split=fname.split('_')
 			fname_out=''

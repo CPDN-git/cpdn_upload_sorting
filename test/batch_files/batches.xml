@@ -7,4 +7,12 @@
             <ul_files>4</ul_files>
             <project>TESTING</project>
         </batch>
+    <batch_url>http://climateapps2.oerc.ox.ac.uk/batch/</batch_url>
+        <batch id="998">
+            <name>Sorting test batch</name>
+            <description>Dummy batch used for cpdn_upload_sorting</description>
+            <owner>Peter Uhe &lt;Peter.Uhe@ouce.ox.ac.uk&gt;</owner>
+            <ul_files>4</ul_files>
+            <project>TESTING</project>
+        </batch>
 </batches>

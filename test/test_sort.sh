@@ -36,6 +36,10 @@ cp dummy_file.zip incoming/wah2_test_umid_193012_01_999_000000008_0_2.zip
 cp dummy_file.zip incoming/wah2_test_umid_193012_01_999_000000008_0_3.zip
 cp dummy_file.zip incoming/wah2_test_umid_193012_01_999_000000008_0_4.zip
 
+# Test of batch that only has a corrupt zip file within it 
+cp corrupt_file.zip incoming/wah2_test_umid_193012_01_998_000000001_0_2.zip
+#cp dummy_file.zip incoming/wah2_test_umid_193012_01_998_000000001_0_2.zip
+
 export RESULTS_FOLDER=./results
 export INCOMING_FOLDER=./incoming
 export BATCH_LISTS_URLS=./batch_files
