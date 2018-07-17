@@ -1,0 +1,36 @@
+### Environment Variables for batch sorting scripts
+#
+# location of lists of batches and successful/failed workunits
+BATCH_LISTS_URLS=http://vorvadoss.oerc.ox.ac.uk/cpdnboinc_dev/download/batch_lists,https://www.cpdn.org/batch,http://vorvadpss.oerc.ox.ac.uk/cpdnboinc_alpha/download/batch_lists
+
+# Folder for sorted results
+RESULTS_FOLDER=/storage/boinc/project_results
+
+# Incoming folder where new uploads are put
+INCOMING_FOLDER=/storage/incoming/uploader
+
+# (optional) temporary directory which the backup 'open_batches.txt' and 'closed_batches.txt' are saved to
+TMPDIR=/home/boinc/cpdn_upload_sorting/tmp
+
+# (optional) url for sorted files on the upload folder (goes into list of successful workunits as a 'wget' file)
+#UPLOAD_BASE_URL=http://upload11.cpdn.org/results
+
+# Directory which these scripts are cloned into
+SCRIPTS_DIR=/home/boinc/cpdn_upload_sorting
+
+# Directory for log files
+LOG_DIR=/home/boinc/log
+
+# Cleanup the data from closed batches 
+CLEANUP_CLOSED_BATCHES=TRUE
+
+# Sort into project directories
+SORT_BY_PROJECT=TRUE
+
+# Pull updates from repo
+55 * * * * /bin/sh -c "cd $SCRIPTS_DIR && /usr/bin/git pull origin master" 2>/dev/null
+#55 * * * * /bin/sh -c "cd $SCRIPTS_DIR && /usr/bin/git pull origin pfu_clean_closed" 2>/dev/null
+
+# Do the sorting (phase1: hourly, phase2: daily @ 7am)
+0 * * * * $SCRIPTS_DIR/batch_sorting_phase1.py >> $LOG_DIR/batch_sorting_phase1.log
+0 7 * * * $SCRIPTS_DIR/batch_sorting_phase2.py >> $LOG_DIR/batch_sorting_phase2.log
