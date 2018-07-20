@@ -40,3 +40,6 @@ SORT_BY_PROJECT=TRUE
 
 # Run phase2
 0 7 * * * $SCRIPTS_DIR/batch_sorting_phase2.py >> $LOG_DIR/batch_sorting_phase2.log
+
+# Clean up empty directories 
+0 5 * * * bin/sh -c "cd $PROJECT_RESULTS && find . -type d -empty -delete" 2>/dev/null
