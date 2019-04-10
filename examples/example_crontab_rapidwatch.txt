@@ -1,7 +1,7 @@
 ### Environment Variables for batch sorting scripts
 #
 # location of lists of batches and successful/failed workunits
-BATCH_LISTS_URLS=http://vorvadoss.oerc.ox.ac.uk/cpdnboinc_dev/download/batch_lists,http://climateapps2.oerc.ox.ac.uk/batch
+BATCH_LISTS_URLS=https://dev.cpdn.org/download/batch_lists,https://www.cpdn.org/batch
 
 # Folder for sorted results
 RESULTS_FOLDER=/storage/boinc/upload

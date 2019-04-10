@@ -2,8 +2,8 @@
 # Batch scripts cpdnboinc_dev:
 #
 CPDN_PROJECT=CPDN_DEV
-BATCH_SCRIPTS_DIR=/storage/boinc/projects/cpdnboinc_dev/batch_scripts
-LOG_DIR=/storage/boinc/projects/cpdnboinc_dev/log_vorvadoss
+BATCH_SCRIPTS_DIR=/storage/www/cpdnboinc_dev/batch_scripts
+LOG_DIR=/storage/www/cpdnboinc_dev/log_vorvadoss
 
   # calculate batch stats and make list of successful and failed workunits
   1 0 * * *         $BATCH_SCRIPTS_DIR/cpdn_MakeBatchesLists.py 1>>
@@ -15,11 +15,11 @@ LOG_DIR=/storage/boinc/projects/cpdnboinc_dev/log_vorvadoss
 
   ## Batch sorting stuff
   #
-  BATCH_LISTS_URLS=http://vorvadoss.oerc.ox.ac.uk/cpdnboinc_dev/download/batch_lists
-  RESULTS_FOLDER=/storage/boinc/projects/cpdnboinc_dev/results
-  INCOMING_FOLDER=/storage/boinc/projects/cpdnboinc_dev/upload
-  TMPDIR=/storage/boinc/projects/cpdnboinc_dev/cpdn_upload_sorting
-  UPLOAD_SCRIPTS_DIR=/storage/boinc/projects/cpdnboinc_dev/cpdn_upload_sorting
+  BATCH_LISTS_URLS=https://dev.cpdn.org/download/batch_lists
+  RESULTS_FOLDER=/storage/www/cpdnboinc_dev/results
+  INCOMING_FOLDER=/storage/www/cpdnboinc_dev/upload
+  TMPDIR=/storage/www/cpdnboinc_dev/cpdn_upload_sorting
+  UPLOAD_SCRIPTS_DIR=/storage/www/cpdnboinc_dev/cpdn_upload_sorting
   SORT_BY_PROJECT=TRUE
   CLEANUP_CLOSED_BATCHES=TRUE
   # Pull updates from repo

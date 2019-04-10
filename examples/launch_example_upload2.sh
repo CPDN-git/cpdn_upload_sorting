@@ -1,5 +1,5 @@
 #!/bin/bash
-export BATCH_LISTS_URLS=http://vorvadoss.oerc.ox.ac.uk/cpdnboinc_dev/download/batch_lists,http://climateapps2.oerc.ox.ac.uk/batch
+export BATCH_LISTS_URLS=https://dev.cpdn.org/download/batch_lists,https://www.cpdn.org/batch,http://alpha.cpdn.org/download/batch_lists
 export RESULTS_FOLDER=/storage/boinc/project_results
 export INCOMING_FOLDER=/storage/incoming/uploader
 export TMPDIR=/home/cpdn
