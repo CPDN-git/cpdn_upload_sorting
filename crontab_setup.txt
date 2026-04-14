@@ -1,0 +1,20 @@
+# Environment Variables for batch sorting scripts
+BATCH_LISTS_URLS=https://main.cpdn.org/batch/,https://dev.cpdn.org/download/batch_lists,http://alpha.cpdn.org/download/batch_lists
+RESULTS_FOLDER=/storage/boinc/project_results
+INCOMING_FOLDER=/storage/incoming/uploader
+TMPDIR=/home/boinc/cpdn_upload_sorting/tmp
+UPLOAD_BASE_URL=http://jasmin-upload.cpdn.org/results
+SCRIPTS_DIR=/home/boinc/cpdn_upload_sorting
+LOG_DIR=/home/boinc/cpdn_upload_sorting/log
+CLEANUP_CLOSED_BATCHES=TRUE
+# Sort by project
+SORT_BY_PROJECT=TRUE
+# Pull updates from repo
+55 * * * * /bin/sh -c "cd $SCRIPTS_DIR && /usr/bin/git pull origin master" 2>/dev/null
+# Do the sorting (phase1: hourly, phase2: daily)
+00 * * * * $SCRIPTS_DIR/batch_sorting_phase1.py >> $LOG_DIR/batch_sorting_phase1.log
+40 15 * * * $SCRIPTS_DIR/batch_sorting_phase2.py >> $LOG_DIR/batch_sorting_phase2.log
+# Remove failed workunits
+30 * * * * $SCRIPTS_DIR/remove_failed.sh >> $LOG_DIR/remove_failed.log
+# Remove empty directories at 10pm
+0 15 * * * /usr/bin/find $RESULTS_FOLDER -type d -empty -delete >> $LOG_DIR/delete_empty.log
